@@ -4,21 +4,19 @@
 
 
 
-new Vue({                   // Grid start from top left cornor (indexing according to that)
+new Vue({                   // Grid indexing starts from bottom left cornor (But rows displayed in reverse)
     template: `
         <div>
             <table id='gameboard'>
-                <tr v-for='row in board'>
+                <tr v-for='row in board.slice().reverse()'>
                     <td v-for='value in row' v-on:click='makeMove'>{{value}}</td>
                 </tr>
             </table>
-            <input v-model='colChoice' placeholder='Enter row number'></input>
-            <button v-on:click='sendChoice'> Send Message </button>
             <p>{{colChoice}}</p>
             <p>{{infoMsg}}</p>
         </div>
     `,
-    data: {
+    data: {                             // TODO Removing colChoice from template causes no updates to 2d array
         ROW_NUM: 6,
         COL_NUM: 7,
         colChoice: -1,
@@ -46,11 +44,11 @@ new Vue({                   // Grid start from top left cornor (indexing accordi
             this.colChoice = event.target.cellIndex
             let column = event.target.cellIndex
             console.log(column)
-            if (this.board[0][column] !== ' ') {   // If no more space left in that column
+            if (this.board[this.ROW_NUM-1][column] !== ' ') {   // If no more space left in that column
                 this.infoMsg = 'No more space left. Choose another column.'
             } else {
                 // Finding the next empty space to add the piece
-                for (let i = this.ROW_NUM-1; i >= 0; i--) {
+                for (let i = 0; i < this.ROW_NUM; i++) {
                     if (this.board[i][column] === ' ') {
                         this.board[i][column] = this.myPieceColor
                         this.myChoicePos = [i, column]
@@ -71,16 +69,13 @@ new Vue({                   // Grid start from top left cornor (indexing accordi
     mounted() {
         this.ws.onmessage = event => {
             if (!this.startGame) {
-                console.log(event.data)
                 if (event.data === '1') {         // If this is player 1
-                    console.log('Connected with Server.')
-                    console.log('You are player 1. Waiting for player 2...')
+                    console.log('Connected with Server.\nYou are player 1. Waiting for player 2...')
                     this.myPieceColor = 'X'     // player 1 assigned color 'X'
                     this.myTurn = true
                 }
                 else if (event.data === '2') {         // If this is player 2
-                    console.log('Connected with Server.')
-                    console.log('You are player 2.')
+                    console.log('Connected with Server.\nYou are player 2.')
                     this.myPieceColor = 'O'     // player 2 assigned color 'O'
                     this.myTurn = false
                 }
@@ -90,15 +85,22 @@ new Vue({                   // Grid start from top left cornor (indexing accordi
                 }
             } else {            // If game started
                 // Now game has started, we recieve positions of opponent player
-                oppChoicePos = JSON.parse(event.data)
-                let [oppRow, oppCol] = JSON.parse(event.data)
-                console.log('Opponent choice received', oppRow, oppCol)
-                if (this.myPieceColor === 'X')
-                    this.board[oppRow][oppCol] = 'O'
-                else
-                    this.board[oppRow][oppCol] = 'X'
-                this.myTurn = true
-                oppChoicePos = []
+                if (event.data === 'Won') {
+                    console.log('You won!')
+                    this.infoMsg = 'You WON!'
+                } else if (event.data === 'Lost') {
+                    console.log('You lost!')
+                    this.infoMsg = 'You lost! Better luck next time.'
+                } else {
+                    let [oppRow, oppCol] = JSON.parse(event.data)
+                    console.log('Opponent choice received', oppRow, oppCol)
+                    if (this.myPieceColor === 'X')
+                        this.board[oppRow][oppCol] = 'O'
+                    else
+                        this.board[oppRow][oppCol] = 'X'
+                    this.myTurn = true
+                    // oppChoicePos = []
+                }
             }
         }
     }
