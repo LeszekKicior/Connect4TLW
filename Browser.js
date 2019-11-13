@@ -9,58 +9,58 @@ new Vue({                   // Grid start from bottom left cornor (indexing acco
         <div>
             <table id='gameboard'>
                 <tr id='row5'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[5][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[5][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[5][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[5][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[5][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[5][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[5][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[5][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[5][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[5][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[5][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[5][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[5][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[5][6]}}</td>
                 </tr>  
                 <tr id='row4'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[4][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[4][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[4][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[4][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[4][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[4][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[4][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[4][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[4][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[4][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[4][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[4][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[4][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[4][6]}}</td>
                 </tr>
                 <tr id='row3'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[3][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[3][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[3][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[3][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[3][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[3][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[3][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[3][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[3][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[3][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[3][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[3][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[3][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[3][6]}}</td>
                 </tr>
                 <tr id='row2'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[2][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[2][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[2][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[2][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[2][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[2][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[2][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[2][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[2][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[2][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[2][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[2][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[2][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[2][6]}}</td>
                 </tr>
                 <tr id='row1'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[1][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[1][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[1][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[1][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[1][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[1][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[1][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[1][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[1][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[1][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[1][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[1][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[1][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[1][6]}}</td>
                 </tr>
                 <tr id='row0'>
-                    <td v-on:click='makeMove(0)'>{{myPieces[0][0]}}</td>
-                    <td v-on:click='makeMove(1)'>{{myPieces[0][1]}}</td>
-                    <td v-on:click='makeMove(2)'>{{myPieces[0][2]}}</td>
-                    <td v-on:click='makeMove(3)'>{{myPieces[0][3]}}</td>
-                    <td v-on:click='makeMove(4)'>{{myPieces[0][4]}}</td>
-                    <td v-on:click='makeMove(5)'>{{myPieces[0][5]}}</td>
-                    <td v-on:click='makeMove(6)'>{{myPieces[0][6]}}</td>
+                    <td v-on:click='makeMove(0)'>{{board[0][0]}}</td>
+                    <td v-on:click='makeMove(1)'>{{board[0][1]}}</td>
+                    <td v-on:click='makeMove(2)'>{{board[0][2]}}</td>
+                    <td v-on:click='makeMove(3)'>{{board[0][3]}}</td>
+                    <td v-on:click='makeMove(4)'>{{board[0][4]}}</td>
+                    <td v-on:click='makeMove(5)'>{{board[0][5]}}</td>
+                    <td v-on:click='makeMove(6)'>{{board[0][6]}}</td>
                 </tr>
             </table>
             <input v-model='colChoice' placeholder='Enter row number'></input>
@@ -76,8 +76,7 @@ new Vue({                   // Grid start from bottom left cornor (indexing acco
         myChoicePos: [],       // stores the position at where the new piece is placed
         oppChoicePos: [],
         myPieceColor: 'X',      // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
-        myPieces: [],
-        oppPieces: [],
+        board: [],
         infoMsg: '',
         startGame: false,
         myTurn: false,
@@ -96,13 +95,13 @@ new Vue({                   // Grid start from bottom left cornor (indexing acco
             }
 
             this.colChoice = column
-            if (this.myPieces[this.ROW_NUM-1][column] !== ' ') {   // If no more space left in that column
+            if (this.board[this.ROW_NUM-1][column] !== ' ') {   // If no more space left in that column
                 this.infoMsg = 'No more space left. Choose another column.'
             } else {
                 // Finding the next empty space to add the piece
                 for (let i = 0; i < this.COL_NUM; i++) {
-                    if (this.myPieces[i][column] === ' ') {
-                        this.myPieces[i][column] = this.myPieceColor
+                    if (this.board[i][column] === ' ') {
+                        this.board[i][column] = this.myPieceColor
                         this.myChoicePos = [i, column]
                         break
                     }
@@ -115,8 +114,8 @@ new Vue({                   // Grid start from bottom left cornor (indexing acco
 
     },
     created() {
-        this.myPieces  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
-        this.oppPieces = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
+        this.board  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
+        this.board = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
     },
     mounted() {
         this.ws.onmessage = event => {
@@ -144,14 +143,14 @@ new Vue({                   // Grid start from bottom left cornor (indexing acco
                 let [oppRow, oppCol] = JSON.parse(event.data)
                 console.log('Opponent choice received', oppRow, oppCol)
                 if (this.myPieceColor === 'X')
-                    this.oppPieces[oppRow][oppCol] = 'O'
+                    this.board[oppRow][oppCol] = 'O'
                 else
-                    this.oppPieces[oppRow][oppCol] = 'X'
+                    this.board[oppRow][oppCol] = 'X'
                 this.myTurn = true
                 oppChoicePos = []
             }
         }
     }
 
-}).$mount('#root')
+}).$mount('#game')
 
