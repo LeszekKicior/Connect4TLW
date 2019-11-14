@@ -12,7 +12,6 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     <td v-for='value in row' v-on:click='makeMove'>{{value}}</td>
                 </tr>
             </table>
-            <p>{{colChoice}}</p>
             <p>{{infoMsg}}</p>
         </div>
     `,
@@ -33,6 +32,12 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         async sendChoice() {
             this.ws.send(JSON.stringify(this.myChoicePos))
         },
+        
+        updateBoard (row, col, piece) {             // the reactive version of doing board[i][col] = pieceColor 
+            let newRow = this.board[row].slice(0)
+            newRow[col] = piece
+            this.$set(this.board, row, newRow)
+        },
 
         makeMove(event) {
             this.infoMsg = ''
@@ -42,16 +47,16 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
 
             this.colChoice = event.target.cellIndex
-            let column = event.target.cellIndex
-            console.log(column)
-            if (this.board[this.ROW_NUM-1][column] !== ' ') {   // If no more space left in that column
+            let col = event.target.cellIndex
+            console.log(col)
+            if (this.board[this.ROW_NUM-1][col] !== ' ') {   // If no more space left in that column
                 this.infoMsg = 'No more space left. Choose another column.'
             } else {
                 // Finding the next empty space to add the piece
                 for (let i = 0; i < this.ROW_NUM; i++) {
-                    if (this.board[i][column] === ' ') {
-                        this.board[i][column] = this.myPieceColor
-                        this.myChoicePos = [i, column]
+                    if (this.board[i][col] === ' ') {
+                        this.updateBoard(i, col, this.myPieceColor)
+                        this.myChoicePos = [i, col]
                         break
                     }
                 }
@@ -62,6 +67,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         },
 
     },
+
     created() {
         this.board  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
         this.board = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
@@ -95,9 +101,9 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     let [oppRow, oppCol] = JSON.parse(event.data)
                     console.log('Opponent choice received', oppRow, oppCol)
                     if (this.myPieceColor === 'X')
-                        this.board[oppRow][oppCol] = 'O'
+                        this.updateBoard(oppRow, oppCol, 'O')
                     else
-                        this.board[oppRow][oppCol] = 'X'
+                        this.updateBoard(oppRow, oppCol, 'X')
                     this.myTurn = true
                     // oppChoicePos = []
                 }
