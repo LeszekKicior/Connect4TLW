@@ -11,12 +11,24 @@
             }
             table {
                 border-collapse: collapse;
+                overflow: hidden;
             }
             td {
                 border: 2px solid rgb(190, 190, 190);
                 height: 20px;
                 width: 20px;
                 text-align: center;
+                position: relative;
+            }
+            td:hover::after {
+              content: "";
+              position: absolute;
+              background-color: #ffa;
+              left: 0;
+              top: -5000px;
+              height: 10000px;
+              width: 100%;
+              z-index: -1;
             }
         </style>
         <script src='vue.js'></script>
