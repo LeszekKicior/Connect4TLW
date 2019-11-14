@@ -19,16 +19,9 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             <p>{{infoMsg}}</p>
         </div>
     `,
-    data: {                             // TODO Removing colChoice from template causes no updates to 2d array
-        ROW_NUM: 6,
-        COL_NUM: 7,
-        colChoice: -1,
-        hoverColumn: -1,        // column number of cell where mouse is hovering
-        hoverColor: 'white',
+    data: {
         hoverColors: [],        // stores the highlight color of each cell
-        myChoicePos: [],        // stores the position at where the new piece is placed
-        oppChoicePos: [],
-        myPiece: '',      // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
+        myPiece: '',            // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
         oppPiece: '',
         board: [],
         infoMsg: '',
@@ -50,7 +43,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
 
         addPieceOnBoard(board, col, piece) {
             // Finding the next empty space in column to fit new piece in 
-            for (let i = 0; i < this.ROW_NUM; i++) {
+            for (let i = 0; i < ROW_NUM; i++) {
                 if (board[i][col] === ' ') {
                     this.updateBoard(board, i, col, piece)
                     return [i, col]
@@ -59,7 +52,6 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         },
 
         makeMove(event) {
-            this.infoMsg = ''
             if (!this.gameStarted || this.gameEnded) {
                 return
             }
@@ -67,16 +59,16 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                 this.infoMsg = 'Please wait for your turn.'
                 return
             }
+            this.infoMsg = ''
 
-            // this.colChoice = event.target.cellIndex
             let col = event.target.cellIndex
             console.log('My choice of col: ', col)
-            if (this.board[this.ROW_NUM-1][col] !== ' ') {   // If no more space left in that column
+            if (this.board[ROW_NUM-1][col] !== ' ') {   // If no more space left in that column
                 this.infoMsg = 'No more space left. Choose another column.'
             } else {
-                this.myChoicePos = this.addPieceOnBoard(this.board, col, this.myPiece)
+                let myChoicePos = this.addPieceOnBoard(this.board, col, this.myPiece)
                 this.myTurn = false
-                this.sendChoice(this.myChoicePos)
+                this.sendChoice(myChoicePos)
             }
         },
 
@@ -90,7 +82,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             let col = event.target.cellIndex
             let tempBoard1 = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
             this.addPieceOnBoard(tempBoard1, col, this.myPiece)
-            for (let c = 0; c < this.COL_NUM; c++) {
+            for (let c = 0; c < COL_NUM; c++) {
                 let tempBoard2 = JSON.parse(JSON.stringify(tempBoard1))
                 this.addPieceOnBoard(tempBoard2, c, this.oppPiece)
                 if (check4Connected(tempBoard2, this.oppPiece)) {
@@ -103,9 +95,9 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
     },
 
     created() {
-        this.board  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
-        this.board = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
-        this.hoverColors = Array(this.ROW_NUM).fill('white');
+        this.board  = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
+        this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
+        this.hoverColors = Array(ROW_NUM).fill('white');
     },
     mounted() {
         this.ws.onmessage = event => {
@@ -150,8 +142,6 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
 }).$mount('#game')
 
 const check4Connected = (board, piece) => {
-    // let piece = (player == 1) ? 'X' : 'O'
-                                            // TODO Possibly highlight winning indices
     // checking vertically
     for (let r = 0; r < ROW_NUM-3; r++) {
         for (let c = 0; c < COL_NUM; c++) {
@@ -170,7 +160,7 @@ const check4Connected = (board, piece) => {
             }
         }
     }
-    // checking diagonally down way                  // TODO Implement diagonal
+    // checking diagonally down way
     for (let i = 3; i < ROW_NUM; i++){
         for (let j = 0; j < COL_NUM-3; j++){
             if (board[i][j] === piece && board[i-1][j+1] === piece && 
