@@ -105,21 +105,21 @@ const check4Connected = (player) => {
             }
         }
     }
-    // checking diagonally one way                  // TODO Implement diagonal
-    // for (let i = 3; i < COL_NUM; i++){
-    //     for (let j = 0; j < ROW_NUM-3; j++){
-    //         if (board[i][j] === piece && board[i-1][j+1] === piece && 
-    //             board[i-2][j+2] === piece && board[i-3][j+3] === piece)
-    //             return true;
-    //     }
-    // }
-    // // checking diagonally other way
-    // for (let i = 3; i < COL_NUM; i++){
-    //     for (let j = 3; j < ROW_NUM; j++){
-    //         if (board[i][j] === piece && board[i-1][j-1] === piece &&
-    //             board[i-2][j-2] === piece && board[i-3][j-3] === piece)
-    //             return true;
-    //     }
-    // }
+    // checking diagonally down way                  // TODO Implement diagonal
+    for (let i = 3; i < ROW_NUM; i++){
+        for (let j = 0; j < COL_NUM-3; j++){
+            if (board[i][j] === piece && board[i-1][j+1] === piece && 
+                board[i-2][j+2] === piece && board[i-3][j+3] === piece)
+                return true;
+        }
+    }
+    // checking diagonally up way
+    for (let i = 3; i < ROW_NUM; i++){
+        for (let j = 3; j < COL_NUM; j++){
+            if (board[i][j] === piece && board[i-1][j-1] === piece &&
+                board[i-2][j-2] === piece && board[i-3][j-3] === piece)
+                return true;
+        }
+    }
     return false;
 }
