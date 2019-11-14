@@ -42,35 +42,35 @@ new ws.Server({ server }).on('connection', client => {
         player2.send('3')
 
         player1.on('message', choice => {
-            if (playerTurn === 1) {
-                console.log('Choice received from player1: ', choice)
+            console.log('Choice received from player1: ', choice)
+            player2.send(choice)
+            if (choice === 'Reset') {
+                board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
+            } else if (playerTurn === 1) {
                 let [row, col] = JSON.parse(choice)
                 board[row][col] = player1Color
                 if (check4Connected(1)) {   // if player 1 has connected 4 i.e. won game
                     player1.send('Won')
-                    player2.send(choice)
                     player2.send('Lost')
-                } else {
-                    player2.send(choice)
                 }
+                playerTurn = 2              // TODO: possibly remove playerTurn as its not required
             }
-            playerTurn = 2              // TODO: possibly remove playerTurn as its not required
         })
 
         player2.on('message', choice => {
-            if (playerTurn === 2) {
-                console.log('Choice received from player2: ', choice)
+            console.log('Choice received from player2: ', choice)
+            player1.send(choice)
+            if (choice === 'Reset') {
+                board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
+            } else if (playerTurn === 2) {
                 let [row, col] = JSON.parse(choice)
                 board[row][col] = player2Color
                 if (check4Connected(2)) {   // if player 2 has connected 4 i.e. won game
                     player1.send('Lost')
-                    player1.send(choice)
                     player2.send('Won')
-                } else {
-                    player1.send(choice)
                 }
+                playerTurn = 1
             }
-            playerTurn = 1
         })
         
     } else {
@@ -86,9 +86,8 @@ new ws.Server({ server }).on('connection', client => {
     })
 })
 
-const check4Connected = (player) => {
+const check4Connected = (player) => {           // TODO Move this logic into browser side for more concise code
     let piece = (player == 1) ? 'X' : 'O'
-                                            // TODO Possibly highlight winning indices
     // checking vertically
     for (let r = 0; r < ROW_NUM-3; r++) {
         for (let c = 0; c < COL_NUM; c++) {

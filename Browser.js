@@ -17,6 +17,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                 </tr>
             </table>
             <p>{{infoMsg}}</p>
+            <button v-if='gameEnded' v-on:click='restartGame'>Restart Game</button>
         </div>
     `,
     data: {
@@ -92,10 +93,15 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
             this.$set(this.hoverColors, col, 'palegreen')
         },
+
+        restartGame() {
+            this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));     // resetting the board
+            this.gameEnded = false
+            this.ws.send('Reset')        // asking server to reset its board
+        }
     },
 
     created() {
-        this.board  = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
         this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
         this.hoverColors = Array(ROW_NUM).fill('white');
     },
@@ -128,6 +134,10 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     console.log('You lost!')
                     this.infoMsg = 'You lost! Better luck next time.'
                     this.gameEnded = true
+                } else if (event.data === 'Reset') {
+                    console.log('Restart game request received')
+                    this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
+                    this.gameEnded = false
                 } else {
                     this.infoMsg = ''
                     let [oppRow, oppCol] = JSON.parse(event.data)
