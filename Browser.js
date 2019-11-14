@@ -12,7 +12,8 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             <p v-else>Opponent's turn</p>
             <table id='gameboard'>
                 <tr v-for='row in board.slice().reverse()'>
-                    <td v-for='value in row' v-on:click='makeMove' v-on:mouseover='testMove'>{{value}}</td>
+                    <td v-for='(value,c) in row' v-on:click='makeMove' v-on:mouseover='highlightCol'
+                    v-on:mouseleave='resetCol' v-bind:style="{'background-color': hoverColors[c]}">{{value}}</td>
                 </tr>
             </table>
             <p>{{infoMsg}}</p>
@@ -22,12 +23,14 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         ROW_NUM: 6,
         COL_NUM: 7,
         colChoice: -1,
+        hoverColumn: -1,        // column number of cell where mouse is hovering
+        hoverColor: 'white',
+        hoverColors: [],        // stores the highlight color of each cell
         myChoicePos: [],        // stores the position at where the new piece is placed
         oppChoicePos: [],
         myPiece: '',      // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
         oppPiece: '',
         board: [],
-        boardTest: [],          // this board is used for trying out next opponent moves for highlighting columns 
         infoMsg: '',
         gameStarted: false,
         gameEnded: false,
@@ -77,27 +80,62 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
         },
 
-        async testMove(event) {
-            let col = event.target.cellIndex
-            let boardTest = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
-            this.addPieceOnBoard(boardTest, col, this.myPiece)
+        resetCol() {
+            for (let c = 0; c < COL_NUM; c++) {
+                this.$set(this.hoverColors, c, 'white')   // Resetting all colors to white
+            }
+        },
 
+        highlightCol(event) {
+            let col = event.target.cellIndex
+            let tempBoard1 = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
+            this.addPieceOnBoard(tempBoard1, col, this.myPiece)
             for (let c = 0; c < this.COL_NUM; c++) {
-                let tempBoard =  await JSON.parse(JSON.stringify(boardTest))
-                this.addPieceOnBoard(tempBoard, c, this.oppPiece)
-                if (check4Connected(tempBoard, this.oppPiece)) {
-                    console.log('RED')
+                let tempBoard2 = JSON.parse(JSON.stringify(tempBoard1))
+                this.addPieceOnBoard(tempBoard2, c, this.oppPiece)
+                if (check4Connected(tempBoard2, this.oppPiece)) {
+                    this.$set(this.hoverColors, col, 'lightcoral')
                     return
                 }
             }
-            console.log('GREEN')
+            this.$set(this.hoverColors, col, 'palegreen')
         },
     },
 
+    computed: {
+        // colStyle: () => {
+        //     return {
+        //         'background-color': this.hoverColor
+        //     }
+        // },
+
+        colHighlight: () => {
+            // let col = event.target.cellIndex
+            // let hoverColor = 'green'
+            // let col = this.hoverColumn
+            // let boardTest = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
+            // this.addPieceOnBoard(boardTest, col, this.myPiece)
+
+            // for (let c = 0; c < this.COL_NUM; c++) {
+            //     let tempBoard =  JSON.parse(JSON.stringify(boardTest))
+            //     this.addPieceOnBoard(tempBoard, c, this.oppPiece)
+            //     if (check4Connected(tempBoard, this.oppPiece)) {
+            //         hoverColor = 'red'
+            //         break
+            //     }
+            // }
+            // this.hoverColor = 'green'
+            return {
+                '--cell-color': 'white',
+                '--cell-color--hover': this.hoverColor
+            };
+        }
+    },
 
     created() {
         this.board  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
         this.board = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
+        this.hoverColors = Array(this.ROW_NUM).fill('white');
     },
     mounted() {
         this.ws.onmessage = event => {
