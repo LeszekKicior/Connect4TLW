@@ -7,6 +7,8 @@
 new Vue({                   // Grid indexing starts from bottom left cornor (But rows displayed in reverse)
     template: `
         <div>
+            <p v-if='myTurn'>Your turn</p>
+            <p v-else>Opponent's turn</p>
             <table id='gameboard'>
                 <tr v-for='row in board.slice().reverse()'>
                     <td v-for='value in row' v-on:click='makeMove'>{{value}}</td>
@@ -24,7 +26,8 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         myPieceColor: 'X',      // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
         board: [],
         infoMsg: '',
-        startGame: false,
+        gameStarted: false,
+        en: false,
         myTurn: false,
         ws: new WebSocket('ws://localhost:5000')
     },
@@ -33,7 +36,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             this.ws.send(JSON.stringify(this.myChoicePos))
         },
         
-        updateBoard (row, col, piece) {             // the reactive version of doing board[i][col] = pieceColor 
+        updateBoard (row, col, piece) {     // the reactive version of doing board[i][col] = pieceColor 
             let newRow = this.board[row].slice(0)
             newRow[col] = piece
             this.$set(this.board, row, newRow)
@@ -41,8 +44,8 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
 
         makeMove(event) {
             this.infoMsg = ''
-            if (!this.startGame || !this.myTurn) {
-                infoMsg = 'Please wait for your turn.'
+            if (!this.gameStarted || !this.myTurn) {
+                this.infoMsg = 'Please wait for your turn.'
                 return;
             }
 
@@ -74,7 +77,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
     },
     mounted() {
         this.ws.onmessage = event => {
-            if (!this.startGame) {
+            if (!this.gameStarted) {
                 if (event.data === '1') {         // If this is player 1
                     console.log('Connected with Server.\nYou are player 1. Waiting for player 2...')
                     this.myPieceColor = 'X'     // player 1 assigned color 'X'
@@ -87,7 +90,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                 }
                 else if (event.data === '3') {    // 3 is indication from server to start game
                     console.log('Starting Game.')
-                    this.startGame = true
+                    this.gameStarted = true
                 }
             } else {            // If game started
                 // Now game has started, we recieve positions of opponent player
@@ -98,6 +101,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     console.log('You lost!')
                     this.infoMsg = 'You lost! Better luck next time.'
                 } else {
+                    this.infoMsg = ''
                     let [oppRow, oppCol] = JSON.parse(event.data)
                     console.log('Opponent choice received', oppRow, oppCol)
                     if (this.myPieceColor === 'X')
@@ -105,7 +109,6 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     else
                         this.updateBoard(oppRow, oppCol, 'X')
                     this.myTurn = true
-                    // oppChoicePos = []
                 }
             }
         }

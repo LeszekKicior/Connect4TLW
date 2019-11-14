@@ -48,6 +48,7 @@ new ws.Server({ server }).on('connection', client => {
                 board[row][col] = player1Color
                 if (check4Connected(1)) {   // if player 1 has connected 4 i.e. won game
                     player1.send('Won')
+                    player2.send(choice)
                     player2.send('Lost')
                 } else {
                     player2.send(choice)
@@ -63,6 +64,7 @@ new ws.Server({ server }).on('connection', client => {
                 board[row][col] = player2Color
                 if (check4Connected(2)) {   // if player 2 has connected 4 i.e. won game
                     player1.send('Lost')
+                    player1.send(choice)
                     player2.send('Won')
                 } else {
                     player1.send(choice)
