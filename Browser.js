@@ -27,7 +27,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         board: [],
         infoMsg: '',
         gameStarted: false,
-        en: false,
+        gameEnded: false,
         myTurn: false,
         ws: new WebSocket('ws://localhost:5000')
     },
@@ -44,9 +44,12 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
 
         makeMove(event) {
             this.infoMsg = ''
-            if (!this.gameStarted || !this.myTurn) {
+            if (!this.gameStarted || this.gameEnded) {
+                return
+            }
+            if (!this.myTurn) {
                 this.infoMsg = 'Please wait for your turn.'
-                return;
+                return
             }
 
             this.colChoice = event.target.cellIndex
@@ -97,9 +100,11 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                 if (event.data === 'Won') {
                     console.log('You won!')
                     this.infoMsg = 'You WON!'
+                    this.gameEnded = true
                 } else if (event.data === 'Lost') {
                     console.log('You lost!')
                     this.infoMsg = 'You lost! Better luck next time.'
+                    this.gameEnded = true
                 } else {
                     this.infoMsg = ''
                     let [oppRow, oppCol] = JSON.parse(event.data)
