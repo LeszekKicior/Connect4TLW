@@ -13,7 +13,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             <table id='gameboard'>
                 <tr v-for='row in board.slice().reverse()'>
                     <td v-for='(value,c) in row' v-on:click='makeMove' v-on:mouseover='highlightCol'
-                    v-on:mouseleave='resetCol' v-bind:style="{'background-color': hoverColors[c]}">{{value}}</td>
+                    v-on:mouseleave='resetColor' v-bind:style="{'background-color': hoverColors[c]}">{{value}}</td>
                 </tr>
             </table>
             <p>{{infoMsg}}</p>
@@ -80,7 +80,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
         },
 
-        resetCol() {
+        resetColor() {
             for (let c = 0; c < COL_NUM; c++) {
                 this.$set(this.hoverColors, c, 'white')   // Resetting all colors to white
             }
@@ -100,36 +100,6 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
             this.$set(this.hoverColors, col, 'palegreen')
         },
-    },
-
-    computed: {
-        // colStyle: () => {
-        //     return {
-        //         'background-color': this.hoverColor
-        //     }
-        // },
-
-        colHighlight: () => {
-            // let col = event.target.cellIndex
-            // let hoverColor = 'green'
-            // let col = this.hoverColumn
-            // let boardTest = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
-            // this.addPieceOnBoard(boardTest, col, this.myPiece)
-
-            // for (let c = 0; c < this.COL_NUM; c++) {
-            //     let tempBoard =  JSON.parse(JSON.stringify(boardTest))
-            //     this.addPieceOnBoard(tempBoard, c, this.oppPiece)
-            //     if (check4Connected(tempBoard, this.oppPiece)) {
-            //         hoverColor = 'red'
-            //         break
-            //     }
-            // }
-            // this.hoverColor = 'green'
-            return {
-                '--cell-color': 'white',
-                '--cell-color--hover': this.hoverColor
-            };
-        }
     },
 
     created() {
