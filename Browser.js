@@ -2,7 +2,8 @@
  *              @author Nouman Abbasi
 */
 
-
+const ROW_NUM = 6
+const COL_NUM = 7
 
 new Vue({                   // Grid indexing starts from bottom left cornor (But rows displayed in reverse)
     template: `
@@ -11,7 +12,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             <p v-else>Opponent's turn</p>
             <table id='gameboard'>
                 <tr v-for='row in board.slice().reverse()'>
-                    <td v-for='value in row' v-on:click='makeMove'>{{value}}</td>
+                    <td v-for='value in row' v-on:click='makeMove' v-on:mouseover='testMove'>{{value}}</td>
                 </tr>
             </table>
             <p>{{infoMsg}}</p>
@@ -47,7 +48,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         addPieceOnBoard(board, col, piece) {
             // Finding the next empty space in column to fit new piece in 
             for (let i = 0; i < this.ROW_NUM; i++) {
-                if (this.board[i][col] === ' ') {
+                if (board[i][col] === ' ') {
                     this.updateBoard(board, i, col, piece)
                     return [i, col]
                 }
@@ -76,13 +77,23 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
         },
 
+        async testMove(event) {
+            let col = event.target.cellIndex
+            let boardTest = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
+            this.addPieceOnBoard(boardTest, col, this.myPiece)
+
+            for (let c = 0; c < this.COL_NUM; c++) {
+                let tempBoard =  await JSON.parse(JSON.stringify(boardTest))
+                this.addPieceOnBoard(tempBoard, c, this.oppPiece)
+                if (check4Connected(tempBoard, this.oppPiece)) {
+                    console.log('RED')
+                    return
+                }
+            }
+            console.log('GREEN')
+        },
     },
 
-    testMove(event) {
-        let col = event.target.cellIndex
-        let boardTest = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
-        addPieceOnBoard(boardTest, col, this.myPiece)
-    },
 
     created() {
         this.board  = Array(this.ROW_NUM).fill().map(() => Array(this.COL_NUM).fill(' '));
@@ -129,4 +140,44 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
     }
 
 }).$mount('#game')
+
+const check4Connected = (board, piece) => {
+    // let piece = (player == 1) ? 'X' : 'O'
+                                            // TODO Possibly highlight winning indices
+    // checking vertically
+    for (let r = 0; r < ROW_NUM-3; r++) {
+        for (let c = 0; c < COL_NUM; c++) {
+            if (board[r][c] === piece && board[r+1][c] === piece &&
+                board[r+2][c] === piece && board[r+3][c] === piece){
+                return true;
+            }
+        }
+    }
+    //checking horizontally
+    for (let r = 0; r < ROW_NUM; r++) {
+        for (let c = 0; c < COL_NUM-3; c++) {
+            if (board[r][c] === piece && board[r][c+1] === piece &&
+                board[r][c+2] === piece && board[r][c+3] === piece){
+                return true;
+            }
+        }
+    }
+    // checking diagonally down way                  // TODO Implement diagonal
+    for (let i = 3; i < ROW_NUM; i++){
+        for (let j = 0; j < COL_NUM-3; j++){
+            if (board[i][j] === piece && board[i-1][j+1] === piece && 
+                board[i-2][j+2] === piece && board[i-3][j+3] === piece)
+                return true;
+        }
+    }
+    // checking diagonally up way
+    for (let i = 3; i < ROW_NUM; i++){
+        for (let j = 3; j < COL_NUM; j++){
+            if (board[i][j] === piece && board[i-1][j-1] === piece &&
+                board[i-2][j-2] === piece && board[i-3][j-3] === piece)
+                return true;
+        }
+    }
+    return false;
+}
 
