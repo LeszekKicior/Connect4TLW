@@ -21,11 +21,11 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         </div>
     `,
     data: {
+        board: [],              // stores the entire game state
         hoverColors: [],        // stores the highlight color of each cell
-        myPiece: '',            // color of piece assigned to this user by the server. Player 1: X. Player 2: O.
-        oppPiece: '',
-        board: [],
-        infoMsg: '',
+        myPiece: '',            // piece assigned to this player. Player 1: X. Player 2: O.
+        oppPiece: '',           // piece assigned to opponent player.
+        infoMsg: '',            // infoMsg displayed at bottom of board
         gameStarted: false,
         gameEnded: false,
         myTurn: false,
@@ -36,12 +36,14 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             this.ws.send(JSON.stringify(col))
         },
         
-        updateBoard(board, row, col, piece) {   // the reactive version of doing board[i][col] = pieceColor
+        // The reactive version of doing board[i][col] = pieceColor
+        updateBoard(board, row, col, piece) {
             let newRow = board[row].slice(0)
             newRow[col] = piece
             this.$set(board, row, newRow)
         },
 
+        // Adds the piece on the board and returns the row and column where its added
         addPieceOnBoard(board, col, piece) {
             // Finding the next empty space in column to fit new piece in 
             for (let i = 0; i < ROW_NUM; i++) {
@@ -52,6 +54,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             }
         },
 
+        // Event called every time user clicks on the board
         makeMove(event) {
             if (!this.gameStarted || this.gameEnded) {
                 return
@@ -75,16 +78,18 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     this.infoMsg = 'You WON!'
                     this.gameEnded = true
                 }
-                this.sendChoice(myChoicePos)
+                this.sendChoice(myChoicePos)    // sending both row and col for easier debugging
             }
         },
 
+        // Resets the background color of the board cells to white
         resetColor() {
             for (let c = 0; c < COL_NUM; c++) {
                 this.$set(this.hoverColors, c, 'white')   // Resetting all colors to white
             }
         },
 
+        // Event called upon mouse hovering over cell. Highlights the cell based on future opponent move
         highlightCol(event) {
             let col = event.target.cellIndex
             let tempBoard1 = JSON.parse(JSON.stringify(this.board))     // taking updated copy of board
@@ -100,6 +105,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             this.$set(this.hoverColors, col, 'palegreen')
         },
 
+        // Restarts game by resetting the entire board (both this and opponent's)
         restartGame() {
             this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));     // resetting the board
             this.gameEnded = false
@@ -153,6 +159,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
 
 }).$mount('#game')
 
+// Checks if the 4 pieces are connected on the board
 const check4Connected = (board, piece) => {
     // checking vertically
     for (let r = 0; r < ROW_NUM-3; r++) {
