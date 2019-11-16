@@ -125,6 +125,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     this.myPiece = 'X'     // player 1 assigned color 'X'
                     this.oppPiece = 'O'
                     this.myTurn = true
+                    this.infoMsg = 'Waiting for other player...'
                 }
                 else if (event.data === '2') {         // If this is player 2
                     console.log('Connected with Server.\nYou are player 2.')
@@ -135,6 +136,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                 else if (event.data === '3') {    // 3 is indication from server to start game
                     console.log('Starting Game.')
                     this.gameStarted = true
+                    this.infoMsg = ''
                 }
             } else {            // If game started
                 oppMsg = JSON.parse(event.data)
