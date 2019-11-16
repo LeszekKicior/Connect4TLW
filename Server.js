@@ -6,9 +6,6 @@ const fs = require('fs')
 const http = require('http')
 const ws = require('ws')
 
-const ROW_NUM = 6
-const COL_NUM = 7
-
 const readFile = file => new Promise(resolve =>
     fs.readFile(file, 'utf-8', (err, data) => resolve(data)))
 
@@ -24,59 +21,37 @@ const server = http.createServer(async (req, resp) => {
     }
 }).listen(5000)
 
-let player1, player2
-let player1Color = 'X'
-let player2Color = 'O'
-let playerTurn = 1
-let board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
-// let player2Pieces = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
+let first, second
+
+const playGame = (player1, player2) => {
+    player1.on('message', msg => {
+        console.log('Msg received from player1: ', msg)
+        player2.send(msg)
+    })
+
+    player2.on('message', msg => {
+        console.log('Msg received from player2: ', msg)
+        player1.send(msg)
+    })
+}
 
 new ws.Server({ server }).on('connection', client => {
-    if (player1) {        // If both players have been connected
-        player2 = client
+    if (first) {        // If both players have been connected
+        second = client
         console.log('Player 2 connected as well. Initiating game.')
-        player2.send('2')      // signalling player that you are player 2
+        second.send('2')      // signalling player that you are player 2
 
         // Now telling both players to start game
-        player1.send('3')
-        player2.send('3')
+        first.send('3')
+        second.send('3')
 
-        player1.on('message', choice => {
-            console.log('Choice received from player1: ', choice)
-            player2.send(choice)
-            if (choice === 'Reset') {
-                board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
-            } else if (playerTurn === 1) {
-                let [row, col] = JSON.parse(choice)
-                board[row][col] = player1Color
-                if (check4Connected(1)) {   // if player 1 has connected 4 i.e. won game
-                    player1.send('Won')
-                    player2.send('Lost')
-                }
-                playerTurn = 2              // TODO: possibly remove playerTurn as its not required
-            }
-        })
-
-        player2.on('message', choice => {
-            console.log('Choice received from player2: ', choice)
-            player1.send(choice)
-            if (choice === 'Reset') {
-                board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
-            } else if (playerTurn === 2) {
-                let [row, col] = JSON.parse(choice)
-                board[row][col] = player2Color
-                if (check4Connected(2)) {   // if player 2 has connected 4 i.e. won game
-                    player1.send('Lost')
-                    player2.send('Won')
-                }
-                playerTurn = 1
-            }
-        })
+        playGame(first, second)
         
+        first = undefined
+        second = undefined
     } else {
-        board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '))
         // Only one player connected so far
-        player1 = client
+        first = client
         console.log('Player 1 connected. Waiting for Player 2...')
         client.send('1')      // signalling player that you are player 1
     }
@@ -85,42 +60,3 @@ new ws.Server({ server }).on('connection', client => {
         console.log('A player disconnected')
     })
 })
-
-const check4Connected = (player) => {           // TODO Move this logic into browser side for more concise code
-    let piece = (player == 1) ? 'X' : 'O'
-    // checking vertically
-    for (let r = 0; r < ROW_NUM-3; r++) {
-        for (let c = 0; c < COL_NUM; c++) {
-            if (board[r][c] === piece && board[r+1][c] === piece &&
-                board[r+2][c] === piece && board[r+3][c] === piece){
-                return true;
-            }
-        }
-    }
-    //checking horizontally
-    for (let r = 0; r < ROW_NUM; r++) {
-        for (let c = 0; c < COL_NUM-3; c++) {
-            if (board[r][c] === piece && board[r][c+1] === piece &&
-                board[r][c+2] === piece && board[r][c+3] === piece){
-                return true;
-            }
-        }
-    }
-    // checking diagonally down way                  // TODO Implement diagonal
-    for (let i = 3; i < ROW_NUM; i++){
-        for (let j = 0; j < COL_NUM-3; j++){
-            if (board[i][j] === piece && board[i-1][j+1] === piece && 
-                board[i-2][j+2] === piece && board[i-3][j+3] === piece)
-                return true;
-        }
-    }
-    // checking diagonally up way
-    for (let i = 3; i < ROW_NUM; i++){
-        for (let j = 3; j < COL_NUM; j++){
-            if (board[i][j] === piece && board[i-1][j-1] === piece &&
-                board[i-2][j-2] === piece && board[i-3][j-3] === piece)
-                return true;
-        }
-    }
-    return false;
-}

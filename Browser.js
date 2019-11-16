@@ -32,7 +32,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         ws: new WebSocket('ws://localhost:5000')
     },
     methods: {
-        async sendChoice(col) {
+        sendChoice(col) {
             this.ws.send(JSON.stringify(col))
         },
         
@@ -69,6 +69,12 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             } else {
                 let myChoicePos = this.addPieceOnBoard(this.board, col, this.myPiece)
                 this.myTurn = false
+                if (check4Connected(this.board, this.myPiece)) {       // if player wins ...
+                    myChoicePos.push('Win')                     // ... send win signal along as well
+                    console.log('You won!')
+                    this.infoMsg = 'You WON!'
+                    this.gameEnded = true
+                }
                 this.sendChoice(myChoicePos)
             }
         },
@@ -97,7 +103,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         restartGame() {
             this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));     // resetting the board
             this.gameEnded = false
-            this.ws.send('Reset')        // asking server to reset its board
+            this.sendChoice('Reset')        // asking opponent to reset its board
         }
     },
 
@@ -125,25 +131,21 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     this.gameStarted = true
                 }
             } else {            // If game started
-                // Now game has started, we recieve positions of opponent player
-                if (event.data === 'Won') {
-                    console.log('You won!')
-                    this.infoMsg = 'You WON!'
-                    this.gameEnded = true
-                } else if (event.data === 'Lost') {
-                    console.log('You lost!')
-                    this.infoMsg = 'You lost! Better luck next time.'
-                    this.gameEnded = true
-                } else if (event.data === 'Reset') {
+                oppMsg = JSON.parse(event.data)
+                if (oppMsg === 'Reset') {
                     console.log('Restart game request received')
                     this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
                     this.gameEnded = false
-                } else {
+                } else {            // continue to receive opponents choices
                     this.infoMsg = ''
-                    let [oppRow, oppCol] = JSON.parse(event.data)
-                    console.log('Opponent choice of col: ', oppCol)
-                    this.addPieceOnBoard(this.board, oppCol, this.oppPiece)
+                    console.log('Opponent choice of col: ', oppMsg[1])
+                    this.addPieceOnBoard(this.board, oppMsg[1], this.oppPiece)
                     this.myTurn = true
+                    if (oppMsg[oppMsg.length-1] === 'Win') {        // if opponent won
+                        console.log('You lost!')
+                        this.infoMsg = 'You lost! Better luck next time.'
+                        this.gameEnded = true
+                    }
                 }
             }
         }
