@@ -36,7 +36,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             this.ws.send(JSON.stringify(col))
         },
         
-        // The reactive version of doing board[i][col] = pieceColor
+        // The reactive version of doing board[row][col] = pieceColor
         updateBoard(board, row, col, piece) {
             let newRow = board[row].slice(0)
             newRow[col] = piece
@@ -110,6 +110,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
             this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));     // resetting the board
             this.gameEnded = false
             this.sendChoice('Reset')        // asking opponent to reset its board
+            this.infoMsg = 'Game restarted'
         }
     },
 
@@ -144,6 +145,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     console.log('Restart game request received')
                     this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
                     this.gameEnded = false
+                    this.infoMsg = 'Game restarted by opponent'
                 } else {            // continue to receive opponents choices
                     this.infoMsg = ''
                     console.log('Opponent choice of col: ', oppMsg[1])

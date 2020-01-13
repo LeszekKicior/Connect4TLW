@@ -6,6 +6,8 @@ const fs = require('fs')
 const http = require('http')
 const ws = require('ws')
 
+const PORT = 5000
+
 const readFile = file => new Promise(resolve =>
     fs.readFile(file, 'utf-8', (err, data) => resolve(data)))
 
@@ -19,7 +21,7 @@ const server = http.createServer(async (req, resp) => {
     } else {
         resp.end()
     }
-}).listen(5000)
+}).listen(PORT)
 
 let first, second
 
