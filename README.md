@@ -2,6 +2,8 @@
 
 Multiplayer Connect 4 Game using Vue.js
 
+![Connect4Game](/game_image.png)
+
 ## Requirements
 
 * Vue.js (included)
