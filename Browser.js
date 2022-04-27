@@ -119,7 +119,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
         this.hoverColors = Array(ROW_NUM).fill('white');
     },
     mounted() {
-        this.ws.onmessage = event => {
+        this.ws.onmessage = async event => {
             if (!this.gameStarted) {
                 if (event.data === '1') {         // If this is player 1
                     console.log('Connected with Server.\nYou are player 1. Waiting for player 2...')
@@ -140,7 +140,11 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                     this.infoMsg = ''
                 }
             } else {            // If game started
-                oppMsg = JSON.parse(event.data)
+                const message = await event.data.text()
+                console.groupCollapsed('Server message')
+                console.log('MESSAGE RECEIVED FROM SERVER:')
+                const oppMsg = JSON.parse(await event.data.text())
+                console.log(oppMsg);
                 if (oppMsg === 'Reset') {
                     console.log('Restart game request received')
                     this.board = Array(ROW_NUM).fill().map(() => Array(COL_NUM).fill(' '));
@@ -157,6 +161,7 @@ new Vue({                   // Grid indexing starts from bottom left cornor (But
                         this.gameEnded = true
                     }
                 }
+                console.groupEnd()
             }
         }
     }
