@@ -1,0 +1,25 @@
+{
+  "name": "connect4tlw",
+  "version": "1.0.0",
+  "description": "Multiplayer Connect 4 Game using Vue.js",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeszekKicior/Connect4TLW.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeszekKicior/Connect4TLW/issues"
+  },
+  "homepage": "https://github.com/LeszekKicior/Connect4TLW#readme",
+  "dependencies": {
+    "async-limiter": "^2.0.0",
+    "node-fetch": "^3.2.3",
+    "ws": "^8.5.0"
+  }
+}
