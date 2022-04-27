@@ -62,3 +62,6 @@ new ws.Server({ server }).on('connection', client => {
         console.log('A player disconnected')
     })
 })
+
+console.log(`Connect4 server now running at http://localhost:${PORT}`)
+console.log('Waiting for browser connection...')
