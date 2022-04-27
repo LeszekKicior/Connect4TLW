@@ -1,7 +1,3 @@
-/**     Assignment 3: Connect 4 Game (BROWSER SIDE)
- *              @author Nouman Abbasi
-*/
-
 const ROW_NUM = 6
 const COL_NUM = 7
 
