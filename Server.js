@@ -1,27 +1,9 @@
-/**     Assignment 3: Connect 4 Game (SERVER SIDE)
- *              @author Nouman Abbasi
-*/
-
-const fs = require('fs')
 const http = require('http')
 const ws = require('ws')
 
 const PORT = 5000
 
-const readFile = file => new Promise(resolve =>
-    fs.readFile(file, 'utf-8', (err, data) => resolve(data)))
-
-const server = http.createServer(async (req, resp) => {
-    if (req.url === '/') {
-        resp.end(await readFile('index.html'))
-    } else if (req.url === '/Browser.js') {
-        resp.end(await readFile('Browser.js'))
-    } else if (req.url === '/vue.js') {
-        resp.end(await readFile('vue.js'))
-    } else {
-        resp.end()
-    }
-}).listen(PORT)
+const server = http.createServer().listen(PORT)
 
 let first, second
 
