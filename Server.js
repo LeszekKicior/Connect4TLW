@@ -3,11 +3,15 @@ const ws = require('ws')
 
 const PORT = 5000
 const SERVER_MESSAGES = {
-    YOU_ARE_PLAYER_ONE: '1',
-    YOU_ARE_PLAYER_TWO: '2',
-    START_GAME: '3'
+    YOU_ARE_PLAYER_ONE: 'player-1',
+    YOU_ARE_PLAYER_TWO: 'player-2',
+    START_GAME: 'start',
+    WIN: 'win',
+    STALEMATE: 'stalemate',
+    RESET: 'reset',
+    OPPONENT_DISCONNECTED: 'disconnected',
 }
-const playerGroupMap = {}
+const playerGroupMap = {} // Used for temporarily storing pairs of players for matchmaking
 
 const server = http.createServer().listen(PORT)
 const wsServer = new ws.WebSocketServer({server});
@@ -21,6 +25,13 @@ const setupGameEvents = (playerGroup) => {
     playerGroup.second.on('message', msg => {
         console.log('Message received from player 2: ', msg)
         playerGroup.first.send(msg)
+    })
+
+    playerGroup.first.on('close', () => {
+        playerGroup.second.send(SERVER_MESSAGES.OPPONENT_DISCONNECTED)
+    })
+    playerGroup.second.on('close', () => {
+        playerGroup.first.send(SERVER_MESSAGES.OPPONENT_DISCONNECTED)
     })
 }
 
@@ -41,9 +52,11 @@ wsServer.on('connection', (client, request) => {
         playerGroup.second = client
         console.log(`New player added to group ${token}`)
         client.send(SERVER_MESSAGES.YOU_ARE_PLAYER_TWO) // Tell client it's player 2
+
         setupGameEvents(playerGroup)
         startGame(playerGroup)
         delete playerGroupMap[token]
+
         console.log('GAME STARTED')
         if(Object.keys(playerGroupMap).length) {
             console.log(`Groups waiting to start: ${Object.keys(playerGroupMap)}`)
