@@ -10,6 +10,7 @@ const SERVER_MESSAGES = {
     STALEMATE: 'stalemate',
     RESET: 'reset',
     OPPONENT_DISCONNECTED: 'disconnected',
+    ROOM_FULL: 'full'
 }
 const playerGroupMap = {} // Used for temporarily storing pairs of players for matchmaking
 
@@ -17,7 +18,7 @@ const server = http.createServer().listen(PORT)
 const wsServer = new ws.WebSocketServer({server});
 
 
-const setupGameEvents = (playerGroup) => {
+const setupGameEvents = (playerGroup, token) => {
     playerGroup.first.on('message', msg => {
         console.log('Message received from player 1: ', msg)
         playerGroup.second.send(msg)
@@ -29,9 +30,17 @@ const setupGameEvents = (playerGroup) => {
 
     playerGroup.first.on('close', () => {
         playerGroup.second.send(SERVER_MESSAGES.OPPONENT_DISCONNECTED)
+        playerGroupMap[token] = {
+            first: null,
+            second: playerGroup.second
+        }
     })
     playerGroup.second.on('close', () => {
         playerGroup.first.send(SERVER_MESSAGES.OPPONENT_DISCONNECTED)
+        playerGroupMap[token] = {
+            first: playerGroup.first,
+            second: null
+        }
     })
 }
 
@@ -49,11 +58,19 @@ wsServer.on('connection', (client, request) => {
         console.log(`New player group created with token ${token}`)
         client.send(SERVER_MESSAGES.YOU_ARE_PLAYER_ONE) // Tell client it's player 1
     } else { // Player group already exists -> join
-        playerGroup.second = client
+        if(!playerGroup.first) {
+            playerGroup.first = client
+            client.send(SERVER_MESSAGES.YOU_ARE_PLAYER_ONE) // Tell client it's player 1
+        }
+        else if (!playerGroup.second) {
+            playerGroup.second = client
+            client.send(SERVER_MESSAGES.YOU_ARE_PLAYER_TWO) // Tell client it's player 2
+        } else {
+            client.send(SERVER_MESSAGES.ROOM_FULL)
+        }
         console.log(`New player added to group ${token}`)
-        client.send(SERVER_MESSAGES.YOU_ARE_PLAYER_TWO) // Tell client it's player 2
 
-        setupGameEvents(playerGroup)
+        setupGameEvents(playerGroup, token)
         startGame(playerGroup)
         delete playerGroupMap[token]
 
