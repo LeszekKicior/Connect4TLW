@@ -120,6 +120,7 @@ wsServer.on('connection', (client, request) => {
         return; // GUARD
     }
     playerMap[userId] = {client, opponentId: null};
+    console.log('NEW USER CONNECTED, ID ', userId)
 
     client.on('message', (msg) => {
         const parsedMessage = parseMessage(msg)
@@ -132,7 +133,6 @@ wsServer.on('connection', (client, request) => {
             const invitedPlayer = getPlayerById(invitedId)?.client
             if(!invitedPlayer) {
                 sendServerMessage(client, SERVER_MESSAGES.ACTION_NOT_POSSIBLE)
-                console.log('ERROR 125')
                 return; //GUARD
             }
             sendMessage(invitedPlayer, {
@@ -144,7 +144,6 @@ wsServer.on('connection', (client, request) => {
             console.log('INVITATION CONFIRMED')
             const opponentId = parsedMessage.data.userId
             if(!opponentId) {
-                console.log('ERROR 137')
                 sendServerMessage(client, SERVER_MESSAGES.ACTION_NOT_POSSIBLE)
                 return //GUARD
             }
@@ -159,7 +158,10 @@ wsServer.on('connection', (client, request) => {
         if(parsedMessage.type === MESSAGE_TYPES.MOVE) {
             console.log('NEW MOVE')
             const opponentId = getPlayerById(userId).opponentId
-            const opponent = getPlayerById(opponentId).client
+            const opponent = getPlayerById(opponentId)?.client
+            if(!opponent) {
+                return ; // GUARD
+            }
             sendMessage(opponent, {type: MESSAGE_TYPES.MOVE, data: parsedMessage.data})
         }
 
@@ -173,12 +175,18 @@ wsServer.on('connection', (client, request) => {
         if(parsedMessage.type === SERVER_MESSAGES.RESET) {
             const opponentId = getPlayerById(userId).opponentId
             const opponent = getPlayerById(opponentId).client
+            if(!opponent) {
+                return ; // GUARD
+            }
             sendMessage(opponent, {type: MESSAGE_TYPES.SERVER_MESSAGE, data: SERVER_MESSAGES.RESET})
         }
     })
 
     client.on('close', () => {
         console.log(`Player ${userId} disconnected.`)
+        const opponentId = getPlayerById(userId).opponentId
+        const opponent = getPlayerById(opponentId)?.client
+        sendServerMessage(opponent, SERVER_MESSAGES.DISCONNECTED)
         delete playerMap[userId]
     })
 })
