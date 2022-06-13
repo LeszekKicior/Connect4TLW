@@ -1,6 +1,6 @@
 # Connect4TLW
 
-Node.js server for use with TLW lobby games
+Node.js server for use with games
 
 ## Requirements
 
